@@ -27,7 +27,12 @@
     <button id="delete-cookie" @onclick="DeleteAsync">Delete</button>
     <button id="delete-cookie-with-options" @onclick="DeleteWithOptionsAsync">Delete with options</button>
 </div>
+<div>
+    <button id="watch-cookie-changes" @onclick="WatchChangesAsync">Watch changes</button>
+    <button id="unwatch-cookie-changes" @onclick="UnwatchChangesAsync">Stop watching changes</button>
+</div>
 <p id="cookie-result" role="status">@result</p>
+<p id="cookie-change" role="status">@change</p>
 
 @code {
     // A path other than the page path shows that the Path member reaches the browser.
@@ -36,6 +41,7 @@
     private string name = "cookie";
     private string value = "initial";
     private string result = "No operation has run.";
+    private string change = "No change has been reported.";
 
     private async Task SetAsync()
     {
@@ -131,6 +137,30 @@
     {
         await Browser.Window.CookieStore.DeleteAsync(new CookieStoreDeleteOptions { Name = name, Path = OptionsPath });
         result = $"Deleted with options: {name}";
+    }
+
+    private async Task WatchChangesAsync()
+    {
+        await Browser.Window.CookieStore.SetOnChangeAsync(OnCookieChangeAsync);
+        result = "Watching changes.";
+    }
+
+    private async Task UnwatchChangesAsync()
+    {
+        await Browser.Window.CookieStore.SetOnChangeAsync(null);
+        result = "Stopped watching changes.";
+    }
+
+    private Task OnCookieChangeAsync(CookieChangeEvent changeEvent)
+    {
+        change = string.Join(
+            "; ",
+            [
+                .. changeEvent.Changed.Select(cookie => $"Changed: {cookie.Name}={cookie.Value}"),
+                .. changeEvent.Deleted.Select(cookie => $"Deleted: {cookie.Name}"),
+            ]);
+
+        return InvokeAsync(StateHasChanged);
     }
 
     private static string Format(CookieListItem? cookie)
