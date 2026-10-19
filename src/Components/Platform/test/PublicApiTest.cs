@@ -40,6 +40,7 @@ public class PublicApiTest
         [
             typeof(Storage),
             typeof(CookieStore),
+            typeof(Window),
         ];
 
         var synchronousMethods = liveBrowserObjectTypes
