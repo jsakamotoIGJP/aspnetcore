@@ -1,0 +1,88 @@
+@implements IAsyncDisposable
+@inject Microsoft.AspNetCore.Components.Platform.IBrowserPlatform Browser
+
+<h2>Cache Storage</h2>
+
+<label for="cache-name">Name</label>
+<input id="cache-name" @bind="name" />
+<label for="cache-request">Request</label>
+<input id="cache-request" @bind="request" />
+
+<div>
+    <button id="has-cache" @onclick="HasAsync">Has</button>
+    <button id="open-cache" @onclick="OpenAsync">Open</button>
+    <button id="delete-cache" @onclick="DeleteAsync">Delete</button>
+    <button id="cache-keys" @onclick="KeysAsync">Keys</button>
+</div>
+<div>
+    <button id="add-entry" @onclick="AddEntryAsync">Add entry</button>
+    <button id="delete-entry" @onclick="DeleteEntryAsync">Delete entry</button>
+    <button id="delete-entry-ignoring-search" @onclick="DeleteEntryIgnoringSearchAsync">Delete entry ignoring search</button>
+    <button id="close-cache" @onclick="CloseAsync">Close</button>
+</div>
+<p id="cache-result" role="status" data-run="@runCount">@result</p>
+
+@code {
+    private string name = "cache";
+    private string request = "";
+    private string result = "No operation has run.";
+    private int runCount;
+    private Cache? cache;
+
+    private Task HasAsync() => RunAsync("Has", async () =>
+        (await Browser.Window.Caches.HasAsync(name)).ToString());
+
+    private Task OpenAsync() => RunAsync("Open", async () =>
+    {
+        await CloseCacheAsync();
+        cache = await Browser.Window.Caches.OpenAsync(name);
+        return name;
+    });
+
+    private Task DeleteAsync() => RunAsync("Delete", async () =>
+        (await Browser.Window.Caches.DeleteAsync(name)).ToString());
+
+    private Task KeysAsync() => RunAsync("Keys", async () =>
+    {
+        var keys = await Browser.Window.Caches.KeysAsync();
+        return keys.Count == 0 ? "No caches." : string.Join(", ", keys);
+    });
+
+    private Task AddEntryAsync() => RunAsync("Add entry", async () =>
+    {
+        await GetCache().AddAsync(request);
+        return request;
+    });
+
+    private Task DeleteEntryAsync() => RunAsync("Delete entry", async () =>
+        (await GetCache().DeleteAsync(request)).ToString());
+
+    private Task DeleteEntryIgnoringSearchAsync() => RunAsync("Delete entry ignoring search", async () =>
+        (await GetCache().DeleteAsync(request, new CacheQueryOptions { IgnoreSearch = true })).ToString());
+
+    private Task CloseAsync() => RunAsync("Close", async () =>
+    {
+        await CloseCacheAsync();
+        return name;
+    });
+
+    private Cache GetCache() => cache ?? throw new InvalidOperationException("Open a cache first.");
+
+    private async Task CloseCacheAsync()
+    {
+        if (cache is not null)
+        {
+            await cache.DisposeAsync();
+            cache = null;
+        }
+    }
+
+    private async Task RunAsync(string operation, Func<Task<string>> run)
+    {
+        result = $"{operation}: {await run()}";
+        // Counts only completed runs, so a test waits for its own click and an exception fails at its step.
+        runCount++;
+    }
+
+    public ValueTask DisposeAsync() => cache?.DisposeAsync() ?? ValueTask.CompletedTask;
+}

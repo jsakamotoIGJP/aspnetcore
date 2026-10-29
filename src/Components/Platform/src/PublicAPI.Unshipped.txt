@@ -1,4 +1,22 @@
 #nullable enable
+Microsoft.AspNetCore.Components.Platform.Cache
+Microsoft.AspNetCore.Components.Platform.Cache.AddAsync(string! request) -> System.Threading.Tasks.ValueTask
+Microsoft.AspNetCore.Components.Platform.Cache.DeleteAsync(string! request) -> System.Threading.Tasks.ValueTask<bool>
+Microsoft.AspNetCore.Components.Platform.Cache.DeleteAsync(string! request, Microsoft.AspNetCore.Components.Platform.CacheQueryOptions! options) -> System.Threading.Tasks.ValueTask<bool>
+Microsoft.AspNetCore.Components.Platform.Cache.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.CacheQueryOptions() -> void
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreMethod.get -> bool
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreMethod.set -> void
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreSearch.get -> bool
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreSearch.set -> void
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreVary.get -> bool
+Microsoft.AspNetCore.Components.Platform.CacheQueryOptions.IgnoreVary.set -> void
+Microsoft.AspNetCore.Components.Platform.CacheStorage
+Microsoft.AspNetCore.Components.Platform.CacheStorage.DeleteAsync(string! cacheName) -> System.Threading.Tasks.ValueTask<bool>
+Microsoft.AspNetCore.Components.Platform.CacheStorage.HasAsync(string! cacheName) -> System.Threading.Tasks.ValueTask<bool>
+Microsoft.AspNetCore.Components.Platform.CacheStorage.KeysAsync() -> System.Threading.Tasks.ValueTask<System.Collections.Generic.IReadOnlyList<string!>!>
+Microsoft.AspNetCore.Components.Platform.CacheStorage.OpenAsync(string! cacheName) -> System.Threading.Tasks.ValueTask<Microsoft.AspNetCore.Components.Platform.Cache!>
 Microsoft.AspNetCore.Components.Platform.CookieInit
 Microsoft.AspNetCore.Components.Platform.CookieInit.CookieInit() -> void
 Microsoft.AspNetCore.Components.Platform.CookieInit.Domain.get -> string?
@@ -63,6 +81,9 @@ Microsoft.AspNetCore.Components.Platform.Storage.KeyAsync(uint index) -> System.
 Microsoft.AspNetCore.Components.Platform.Storage.RemoveItemAsync(string! key) -> System.Threading.Tasks.ValueTask
 Microsoft.AspNetCore.Components.Platform.Storage.SetItemAsync(string! key, string! value) -> System.Threading.Tasks.ValueTask
 Microsoft.AspNetCore.Components.Platform.Window
+Microsoft.AspNetCore.Components.Platform.WindowCacheStorageExtensions
+Microsoft.AspNetCore.Components.Platform.WindowCacheStorageExtensions.extension(Microsoft.AspNetCore.Components.Platform.Window!)
+Microsoft.AspNetCore.Components.Platform.WindowCacheStorageExtensions.extension(Microsoft.AspNetCore.Components.Platform.Window!).Caches.get -> Microsoft.AspNetCore.Components.Platform.CacheStorage!
 Microsoft.AspNetCore.Components.Platform.WindowCookieStoreExtensions
 Microsoft.AspNetCore.Components.Platform.WindowCookieStoreExtensions.extension(Microsoft.AspNetCore.Components.Platform.Window!)
 Microsoft.AspNetCore.Components.Platform.WindowCookieStoreExtensions.extension(Microsoft.AspNetCore.Components.Platform.Window!).CookieStore.get -> Microsoft.AspNetCore.Components.Platform.CookieStore!
