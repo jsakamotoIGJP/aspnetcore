@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.Immutable;
+
 namespace Microsoft.AspNetCore.Components.Platform;
 
 /// <summary>
@@ -11,10 +13,10 @@ public sealed class CookieChangeEvent
     /// <summary>
     /// Gets the cookies that were created or changed.
     /// </summary>
-    public IReadOnlyList<CookieListItem> Changed { get; init; } = [];
+    public ImmutableArray<CookieListItem> Changed { get; init; } = [];
 
     /// <summary>
     /// Gets the cookies that were deleted. Their <see cref="CookieListItem.Value"/> is <see langword="null"/>.
     /// </summary>
-    public IReadOnlyList<CookieListItem> Deleted { get; init; } = [];
+    public ImmutableArray<CookieListItem> Deleted { get; init; } = [];
 }

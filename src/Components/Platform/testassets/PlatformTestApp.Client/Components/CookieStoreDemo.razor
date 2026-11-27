@@ -1,4 +1,5 @@
 @implements IAsyncDisposable
+@using System.Collections.Immutable
 @using Microsoft.JSInterop
 @inject Microsoft.AspNetCore.Components.Platform.IBrowserPlatform Browser
 @inject NavigationManager Navigation
@@ -263,6 +264,6 @@
     private static string Format(CookieListItem? cookie)
         => cookie is null ? "Cookie is missing." : $"Found: {cookie.Name}={cookie.Value}";
 
-    private static string Format(IReadOnlyList<CookieListItem> cookies)
-        => cookies.Count == 0 ? "No cookies." : $"Found: {string.Join("; ", cookies.Select(cookie => $"{cookie.Name}={cookie.Value}"))}";
+    private static string Format(ImmutableArray<CookieListItem> cookies)
+        => cookies.IsEmpty ? "No cookies." : $"Found: {string.Join("; ", cookies.Select(cookie => $"{cookie.Name}={cookie.Value}"))}";
 }

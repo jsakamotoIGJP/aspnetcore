@@ -1,7 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Internal;
 using Microsoft.JSInterop;
 
@@ -28,7 +30,10 @@ public sealed class CookieStore : IInternalAsyncDisposal
     /// Gets the event that fires when cookies visible to the current page change.
     /// </summary>
     public static EventType<CookieStore, CookieChangeEvent> ChangeEvent { get; }
-        = EventTypes.Create<CookieStore, CookieChangeEvent>("change", """[{"changed":null,"deleted":null}]""");
+        = EventTypes.Create<CookieStore, CookieChangeEventPayload, CookieChangeEvent>(
+            "change",
+            """[{"changed":null,"deleted":null}]""",
+            static (_, payload) => payload.ToCookieChangeEvent());
 
     /// <summary>
     /// Gets the first cookie with the specified name.
@@ -69,11 +74,13 @@ public sealed class CookieStore : IInternalAsyncDisposal
     /// <returns>The cookies visible to the current page.</returns>
     /// <exception cref="NotSupportedException">The browser does not provide the Cookie Store API for the current page.</exception>
     [DynamicDependency(LinkerFlags.JsonSerialized, typeof(CookieListItem))]
-    public async ValueTask<IReadOnlyList<CookieListItem>> GetAllAsync()
+    public async ValueTask<ImmutableArray<CookieListItem>> GetAllAsync()
     {
         var cookieStore = await GetReferenceAsync().ConfigureAwait(false);
 
-        return await cookieStore.InvokeAsync<CookieListItem[]>("getAll").ConfigureAwait(false);
+        var cookies = await cookieStore.InvokeAsync<CookieListItem[]>("getAll").ConfigureAwait(false);
+
+        return ImmutableCollectionsMarshal.AsImmutableArray(cookies);
     }
 
     /// <summary>
@@ -84,13 +91,15 @@ public sealed class CookieStore : IInternalAsyncDisposal
     /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
     /// <exception cref="NotSupportedException">The browser does not provide the Cookie Store API for the current page.</exception>
     [DynamicDependency(LinkerFlags.JsonSerialized, typeof(CookieListItem))]
-    public async ValueTask<IReadOnlyList<CookieListItem>> GetAllAsync(string name)
+    public async ValueTask<ImmutableArray<CookieListItem>> GetAllAsync(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
         var cookieStore = await GetReferenceAsync().ConfigureAwait(false);
 
-        return await cookieStore.InvokeAsync<CookieListItem[]>("getAll", name).ConfigureAwait(false);
+        var cookies = await cookieStore.InvokeAsync<CookieListItem[]>("getAll", name).ConfigureAwait(false);
+
+        return ImmutableCollectionsMarshal.AsImmutableArray(cookies);
     }
 
     /// <summary>
@@ -102,13 +111,15 @@ public sealed class CookieStore : IInternalAsyncDisposal
     /// <exception cref="NotSupportedException">The browser does not provide the Cookie Store API for the current page.</exception>
     [DynamicDependency(LinkerFlags.JsonSerialized, typeof(CookieStoreGetOptions))]
     [DynamicDependency(LinkerFlags.JsonSerialized, typeof(CookieListItem))]
-    public async ValueTask<IReadOnlyList<CookieListItem>> GetAllAsync(CookieStoreGetOptions options)
+    public async ValueTask<ImmutableArray<CookieListItem>> GetAllAsync(CookieStoreGetOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
         var cookieStore = await GetReferenceAsync().ConfigureAwait(false);
 
-        return await cookieStore.InvokeAsync<CookieListItem[]>("getAll", options).ConfigureAwait(false);
+        var cookies = await cookieStore.InvokeAsync<CookieListItem[]>("getAll", options).ConfigureAwait(false);
+
+        return ImmutableCollectionsMarshal.AsImmutableArray(cookies);
     }
 
     /// <summary>

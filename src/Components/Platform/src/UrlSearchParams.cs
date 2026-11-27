@@ -1,7 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Microsoft.JSInterop;
 
@@ -109,13 +111,15 @@ public sealed class UrlSearchParams : IAsyncDisposable
     /// <param name="name">The query parameter name.</param>
     /// <returns>All values associated with <paramref name="name"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
-    public async ValueTask<IReadOnlyList<string>> GetAllAsync(string name)
+    public async ValueTask<ImmutableArray<string>> GetAllAsync(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
         var reference = await GetReferenceAsync().ConfigureAwait(false);
 
-        return await reference.InvokeAsync<string[]>("getAll", name).ConfigureAwait(false);
+        var values = await reference.InvokeAsync<string[]>("getAll", name).ConfigureAwait(false);
+
+        return ImmutableCollectionsMarshal.AsImmutableArray(values);
     }
 
     /// <summary>

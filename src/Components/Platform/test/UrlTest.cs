@@ -115,7 +115,7 @@ public class UrlTest
         await searchParams.AppendAsync("tag", "two");
         await searchParams.SetAsync("page", "3");
         Assert.Equal("3", await searchParams.GetAsync("page"));
-        Assert.Equal(["one", "two"], await searchParams.GetAllAsync("tag"));
+        Assert.Equal(new[] { "one", "two" }, await searchParams.GetAllAsync("tag"));
         Assert.True(await searchParams.HasAsync("tag"));
         Assert.False(await searchParams.HasAsync("missing"));
         Assert.True(await searchParams.HasAsync("tag", "two"));
